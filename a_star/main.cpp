@@ -68,7 +68,6 @@ double Astar::distance(double x1,double y1,double x2,double y2){
 
  
 std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_pos,const Position& goal_pos){
-
     int sx=start_pos.x/costmap.resolution;
     int sy=start_pos.y/costmap.resolution;
     int gx=goal_pos.x/costmap.resolution;
@@ -102,7 +101,8 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
                 
         }
     }
-    while(cost[gx][gy].status==free_status){
+
+    while(cost[gy][gx].status==free_status){
         
         //注目点の周囲のコストを計算
         cost[tar_y][tar_x].status=close_status;
@@ -120,8 +120,8 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
         for(int y=1;y<grid_size_y-1;y++){
             for (int x=1;x<grid_size_x-1;x++){
                 if(cost[y][x].status==open_status){
-                    if(cost[y][x].sum_cost()<min_cost){
-                        min_cost=cost[y][x].sum_cost();
+                    if((cost[y][x].sum_cost()+costmap.cost_map[y][x])<min_cost){
+                        min_cost=cost[y][x].sum_cost()+costmap.cost_map[y][x];
                         mx=x;
                         my=y;
                     }
@@ -140,9 +140,14 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
         plt::pause(0.001);
         
     }
+
+    std::vector<int> path_x;
+    std::vector<int> path_y;
+    //while(){
+
     plt::show();
 
-
+    
 }
 
 int main() {
@@ -181,8 +186,8 @@ int main() {
     plt::scatter(wall_x,wall_y,100.0,key);
 
 
-    Position start_pos(2.0,2.0);
-    Position goal_pos(8.0,9.0);
+    Position start_pos(1.0,2.0);
+    Position goal_pos(6.0,6.0);
     Astar astar;
 
     plt::xlim(-1, int(costmap.width/costmap.resolution)+1);
