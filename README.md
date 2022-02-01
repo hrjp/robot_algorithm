@@ -16,7 +16,7 @@ git clone https://github.com/hrjp/robot_algorithm
 
 ### install matplotlib
 ```bash
-sudo apt install python3-matplotlib
+sudo apt install python3-matplotlib python3-numpy
 ```
 
 ---

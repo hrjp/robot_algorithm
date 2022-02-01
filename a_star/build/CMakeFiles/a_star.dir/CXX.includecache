@@ -11,6 +11,8 @@ iostream
 -
 cmath
 -
+string
+-
 matplotlibcpp.h
 /home/robot_algorithm/a_star/matplotlibcpp.h
 
