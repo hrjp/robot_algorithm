@@ -2,9 +2,9 @@
 #include <cmath>
 #include <string>
  
-#include "matplotlibcpp.h"
-namespace plt = matplotlibcpp;
+#include <matplotlib-cpp/matplotlibcpp.h>
 
+namespace plt = matplotlibcpp;
 
 class Costmap{
     public:
