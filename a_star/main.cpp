@@ -91,7 +91,7 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
     int tar_y=sy;
     std::vector<int> search_point_x;
     std::vector<int> search_point_y;
-    std::cout<<cost[gx].size()<<std::endl;
+    //std::cout<<cost[gx].size()<<std::endl;
 
     for(int y=0;y<costmap.cost_map.size();y++){
         for (int x=0;x<costmap.cost_map.size();x++){
@@ -108,7 +108,7 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
         cost[tar_y][tar_x].status=close_status;
         for(int i=0;i<8;i++){
             if(cost[tar_y+search_y[i]][tar_x+search_x[i]].status==free_status){
-                cost[tar_y+search_y[i]][tar_x+search_x[i]].from_start=cost[tar_y][tar_x].from_start+search_cost[i];
+                cost[tar_y+search_y[i]][tar_x+search_x[i]].from_start=cost[tar_y][tar_x].from_start+search_cost[i]*(1+costmap.cost_map[tar_y][tar_x]);
                 cost[tar_y+search_y[i]][tar_x+search_x[i]].from_goal=distance(tar_x+search_x[i],tar_y+search_y[i],gx,gy);
                 cost[tar_y+search_y[i]][tar_x+search_x[i]].status=open_status;
             }
@@ -116,12 +116,12 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
         
         //コストが最小の点を探索して次の注目点を決定
         int mx=0,my=0;
-        double min_cost=100000;
+        double min_cost=100.0*grid_size_x*grid_size_y;
         for(int y=1;y<grid_size_y-1;y++){
             for (int x=1;x<grid_size_x-1;x++){
                 if(cost[y][x].status==open_status){
-                    if((cost[y][x].sum_cost()+costmap.cost_map[y][x])<min_cost){
-                        min_cost=cost[y][x].sum_cost()+costmap.cost_map[y][x];
+                    if(cost[y][x].sum_cost()<min_cost){
+                        min_cost=cost[y][x].sum_cost();
                         mx=x;
                         my=y;
                     }
@@ -137,13 +137,36 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
         //std::cout<<tar_x<<","<<tar_y<<","<<min_cost<<std::endl;
         key["c"]="g";
         plt::scatter(pltx,plty,2.0,key);
-        plt::pause(0.001);
+        plt::pause(0.00001);
         
     }
 
-    std::vector<int> path_x;
-    std::vector<int> path_y;
-    //while(){
+    //true path
+    std::vector<int> path_x={gx};
+    std::vector<int> path_y={gy};
+    tar_x=gx;
+    tar_y=gy;
+    int mx=0,my=0;
+    
+    while(!(tar_x==sx && tar_y==sy)){
+        double min_cost=100.0*grid_size_x*grid_size_y;
+        for(int i=0;i<8;i++){
+            if(cost[tar_y+search_y[i]][tar_x+search_x[i]].status==close_status || cost[tar_y+search_y[i]][tar_x+search_x[i]].status==open_status){
+                if(cost[tar_y+search_y[i]][tar_x+search_x[i]].sum_cost()<min_cost){
+                    min_cost=cost[tar_y+search_y[i]][tar_x+search_x[i]].sum_cost();
+                    mx=tar_x+search_x[i];
+                    my=tar_y+search_y[i];
+                }
+            }
+        }
+        tar_x=mx;
+        tar_y=my;
+        cost[tar_y][tar_x].status=free_status;
+        path_x.push_back(mx);
+        path_y.push_back(my);
+        plt::plot(path_x,path_y);
+        plt::pause(0.001);
+    }
 
     plt::show();
 
@@ -153,9 +176,11 @@ std::vector<Position> Astar::calc(const Costmap& costmap,const Position& start_p
 int main() {
 
     //costmap init
-    Costmap costmap(10.0,10.0, 0.25);
+    Costmap costmap(10.0,10.0, 0.5);
     std::vector<int> wall_x;
     std::vector<int> wall_y;
+
+    //外周の壁
     for(int y=0;y<costmap.cost_map.size();y++){
         costmap.cost_map[y][0]=100;
         costmap.cost_map[y][costmap.cost_map[0].size()-1]=100;
@@ -164,6 +189,8 @@ int main() {
         costmap.cost_map[0][x]=100;
         costmap.cost_map[costmap.cost_map.size()-1][x]=100;
     }
+
+    //障害物の壁
     for(int y=0;y<costmap.cost_map.size()-int(costmap.grid_y()*0.25);y++){
         costmap.cost_map[y][costmap.grid_x()*0.25]=100;
         costmap.cost_map[costmap.cost_map.size()-1-y][costmap.grid_x()*0.5]=100;
@@ -187,7 +214,7 @@ int main() {
 
 
     Position start_pos(1.0,2.0);
-    Position goal_pos(6.0,6.0);
+    Position goal_pos(8.5,0.5);
     Astar astar;
 
     plt::xlim(-1, int(costmap.width/costmap.resolution)+1);

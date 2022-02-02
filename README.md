@@ -4,6 +4,7 @@ mobile robot algorithm samples
 ## Denpendency
 * Python3
 * matplotlib
+* numpy
 
 ---
 
@@ -18,6 +19,11 @@ git clone https://github.com/hrjp/robot_algorithm
 ```bash
 sudo apt install python3-matplotlib python3-numpy
 ```
+---
+
+## 1.　A* Algorithm
+![A_star](a_star/a_star.png)
+
 
 ---
 
