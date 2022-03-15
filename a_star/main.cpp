@@ -1,3 +1,12 @@
+/**
+* @file a_star/main.cpp
+* @brief A* algorithm sample
+* @author Shunya Hara
+* @date 2021.2.2
+* @details A* algorithm sample (c++)
+* @ref https://pythonrobotics.readthedocs.io/en/latest/modules/path_planning/path_planning.html#a-algorithm
+*/
+
 #include <iostream>
 #include <cmath>
 #include <string>
